@@ -14,13 +14,19 @@ dependencies:
   permission_handler: ^4.2.0+hotfix.3
   shared_preferences: ^0.5.6+1
   fluttertoast: ^3.1.3
+  assets_audio_player: ^1.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+
 flutter:
 
   uses-material-design: true
+
+
+  assets:
+    - assets/audio/siren.mp3
 
 

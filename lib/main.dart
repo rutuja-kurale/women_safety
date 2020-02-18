@@ -5,6 +5,9 @@ import 'dart:async';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:women_safety_app/edit_contacts.dart';
+import 'dart:io';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,9 +17,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      routes: <String, WidgetBuilder>{
+        '/home': (BuildContext context) => new MyHomePage(),
+        '/edit': (BuildContext context) => new editContacts(),
+      },
       home: MyHomePage(),
     );
   }
@@ -42,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Location _locationService  = new Location();
   bool _permission = false;
   String error;
+  final assetsAudioPlayer = AssetsAudioPlayer();
+  bool isPlaying = false;
 
   requestPermissionsHandler() async {
     await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms]);
@@ -117,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: checkingForNumbers == true ? loadingUI() : dashboardUi(),
+      child: dashboardUi(),
     );
   }
 
@@ -149,7 +155,77 @@ class _MyHomePageState extends State<MyHomePage> {
             fontSize: 16.0,
           ),
         ),
-        SizedBox(height: 30.0,),
+        SizedBox(height: 50.0,),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.50,
+          height: 80.0,
+          child: RaisedButton(
+            elevation: 18.0,
+            onPressed: (){
+              if(isPlaying == false) {
+                assetsAudioPlayer.open(
+                  "assets/audio/siren.mp3",
+                );
+                assetsAudioPlayer.play();
+                setState(() {
+                  isPlaying = true;
+                });
+              } else {
+                assetsAudioPlayer.stop();
+                setState(() {
+                  isPlaying = false;
+                });
+              }
+            },
+            color: Colors.red,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Sound Alarm!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21.0,
+                  ),
+                ),
+                SizedBox(width: 10.0,),
+                Icon(
+                  Icons.notifications_active,
+                  color: Colors.white,
+                  size: 30.0,
+                ),
+              ],
+            ),
+            ),
+        ),
+        SizedBox(height: 50.0,),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.50,
+          height: 80.0,
+          child: RaisedButton(
+            elevation: 18.0,
+            onPressed: (){},
+            color: Colors.blue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Send SMS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21.0,
+                  ),
+                ),
+                SizedBox(width: 10.0,),
+                Icon(
+                  Icons.textsms,
+                  color: Colors.white,
+                  size: 30.0,
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -384,13 +460,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   setNumbers() async {
-    debugPrint("Setting Numbers Now");
+    print("Setting Numbers Now");
     SharedPreferences userDetails = await SharedPreferences.getInstance();
     userDetails.setString("num1", _num1);
     userDetails.setString("num2", _num2);
     userDetails.setString("num3", _num3);
     userDetails.setString("num4", _num4);
     userDetails.setString("num5", _num5);
+    numbersChecker();
     uiChanger();
   }
 
@@ -420,13 +497,16 @@ class _MyHomePageState extends State<MyHomePage> {
   print("Number 1 " +_num1.toString());
   print("Number 2 " +_num2.toString());
   print("Number 3 " +_num3.toString());
-    if(_num1 == "null" || _num2 == "null" || _num3 == "null"){
+    if(_num1 == null || _num2 == null|| _num3 == null){
       setState(() {
+        print('If Condition');
         numberFound = false;
+//        checkingForNumbers = false;
       });
     } else {
       setState(() {
-        checkingForNumbers = false;
+        print('Else Condition');
+//        checkingForNumbers = true;
         numberFound = true;
       });
     }
@@ -447,10 +527,73 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<bool> backButtonHandler() {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+          title: new Text('You want to close app now?'),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: new Text(
+                'No',
+                style: const TextStyle(color: Colors.black, fontSize: 19.0),
+              ),
+            ),
+            new FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+                exit(0);
+              },
+              child: new Text(
+                'Ok',
+                style: const TextStyle(color: Colors.black, fontSize: 19.0),
+              ),
+            ),
+          ],
+        ));
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: numberFound == false ? mainUi() : addNumbersUi(),
+    return SafeArea(
+      child: WillPopScope(
+        onWillPop: backButtonHandler,
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(
+              'Women Safety',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20.0,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.pink,
+            actions: <Widget>[
+              numberFound == true ? Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: InkWell(
+                  onTap: (){
+                    Navigator.of(context).pushNamed("/edit");
+                  },
+                  child: Icon(
+                    Icons.contact_phone,
+                    color: Colors.white,
+                    size: 20.0,
+                  ),
+                ),
+              ) : Container(),
+            ],
+          ),
+          body: numberFound == true ? mainUi() : addNumbersUi(),
+        ),
+      ),
     );
   }
 }
