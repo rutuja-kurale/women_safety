@@ -14,6 +14,7 @@ class _editContactsState extends State<editContacts> {
   final _editContactsKey = GlobalKey<FormState>();
   String _num1, _num2, _num3, _num4, _num5;
   bool _autoValidate = false, checkingForNumbers = true;
+  List<String> recipents = new List<String>();
 
 
   String validateMobile(String value) {
@@ -270,6 +271,11 @@ class _editContactsState extends State<editContacts> {
     userDetails.setString("num5", _num5);
     setState(() {
       checkingForNumbers = false;
+      recipents.add(_num1);
+      recipents.add(_num2);
+      recipents.add(_num3);
+      recipents.add(_num4);
+      recipents.add(_num5);
     });
     Fluttertoast.showToast(
         msg: "Contacts Updated!",
@@ -279,6 +285,7 @@ class _editContactsState extends State<editContacts> {
         textColor: Colors.white,
         fontSize: 16.0
     );
+    print(recipents.toString());
     Navigator.of(context).pushNamed("/home");
   }
 

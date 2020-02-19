@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:women_safety_app/edit_contacts.dart';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 
 void main() => runApp(MyApp());
 
@@ -48,6 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String error;
   final assetsAudioPlayer = AssetsAudioPlayer();
   bool isPlaying = false;
+  String _message;
+  List<String> recipents = new List<String>();
 
   requestPermissionsHandler() async {
     await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms]);
@@ -77,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 _currentLocation = result;
                 _lat = _currentLocation.latitude;
                 _lng = _currentLocation.longitude;
+                _message = "I need Urgent Help!! \n This is my location \n" + "http://maps.google.com/maps?q=$_lat,$_lng";
               });
             }
           });
@@ -204,7 +208,16 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
-            onPressed: (){},
+            onPressed: (){
+              if(_num1.toString() == null || _num2.toString() == null || _num3.toString() == null){
+
+              } else {
+                _sendSMS(
+                  _message,
+                  recipents
+                );
+              }
+            },
             color: Colors.blue,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -460,13 +473,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   setNumbers() async {
-    print("Setting Numbers Now");
     SharedPreferences userDetails = await SharedPreferences.getInstance();
     userDetails.setString("num1", _num1);
     userDetails.setString("num2", _num2);
     userDetails.setString("num3", _num3);
     userDetails.setString("num4", _num4);
     userDetails.setString("num5", _num5);
+    setState(() {
+      recipents.add(_num1);
+      recipents.add(_num2);
+      recipents.add(_num3);
+      recipents.add(_num4);
+      recipents.add(_num5);
+    });
     numbersChecker();
     uiChanger();
   }
@@ -524,6 +543,16 @@ class _MyHomePageState extends State<MyHomePage> {
         _autoValidate = true;
         debugPrint(_autoValidate.toString());
       });
+    }
+  }
+
+  void _sendSMS(String message, List<String> recipents) async {
+    try {
+      String _result =
+      await sendSMS(message: message, recipients: recipents);
+      setState(() => _message = _result);
+    } catch (error) {
+      setState(() => _message = error.toString());
     }
   }
 
