@@ -661,6 +661,74 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
+  Widget _selectPopup() => PopupMenuButton<int>(
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        value: 1,
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Icons.info_outline,
+              color: Colors.black,
+            ),
+            SizedBox(width: 20.0,),
+            Text(
+              'About',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 19.0,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+      numberFound == true ?
+      PopupMenuItem(
+        value: 2,
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Icons.contact_phone,
+              color: Colors.black,
+            ),
+            SizedBox(width: 20.0,),
+            Text(
+              'Update Contact',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 19.0,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      )
+      : Container(),
+    ],
+//    initialValue: 2,
+    onCanceled: () {
+      print("You have canceled the menu.");
+    },
+    onSelected: (value) {
+      switch (value) {
+        case 1: {
+//          logoutHandler();
+        }
+        break;
+        case 2: {
+          Navigator.of(context).pushNamed("/edit");
+        }
+        break;
+      }
+    },
+    icon: Icon(
+      Icons.more_vert,
+      color: Colors.white,
+      size: 40.0,),
+    offset: Offset(0, 100),
+  );
+
 
   @override
   Widget build(BuildContext context) {
@@ -681,19 +749,10 @@ class _MyHomePageState extends State<MyHomePage> {
             centerTitle: true,
             backgroundColor: Colors.pink,
             actions: <Widget>[
-              numberFound == true ? Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: InkWell(
-                  onTap: (){
-                    Navigator.of(context).pushNamed("/edit");
-                  },
-                  child: Icon(
-                    Icons.contact_phone,
-                    color: Colors.white,
-                    size: 20.0,
-                  ),
-                ),
-              ) : Container(),
+              Padding(
+                padding: EdgeInsets.only(right: 12.0),
+                child: _selectPopup(),
+              ),
             ],
           ),
           body: Container(
