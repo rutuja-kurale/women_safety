@@ -255,34 +255,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-        SizedBox(height: 80.0,),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.40,
-          height: 55.0,
-          child: RaisedButton(
-            elevation: 18.0,
-            onPressed: (){},
-            color: Colors.blue,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Next',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 21.0,
-                  ),
-                ),
-                SizedBox(width: 10.0,),
-                Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-              ],
-            ),
-          ),
-        ),
         SizedBox(height: 50.0,),
       ],
     );
@@ -683,7 +655,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      numberFound == true ?
+
       PopupMenuItem(
         value: 2,
         child: Row(
@@ -704,7 +676,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       )
-      : Container(),
     ],
 //    initialValue: 2,
     onCanceled: () {
@@ -717,7 +688,18 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         break;
         case 2: {
-          Navigator.of(context).pushNamed("/edit");
+          if(numberFound == false){
+            Fluttertoast.showToast(
+                msg: "Please add contacts first",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          } else {
+            Navigator.of(context).pushNamed("/edit");
+          }
         }
         break;
       }
@@ -725,7 +707,7 @@ class _MyHomePageState extends State<MyHomePage> {
     icon: Icon(
       Icons.more_vert,
       color: Colors.white,
-      size: 40.0,),
+      size: 30.0,),
     offset: Offset(0, 100),
   );
 
@@ -750,7 +732,7 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.pink,
             actions: <Widget>[
               Padding(
-                padding: EdgeInsets.only(right: 12.0),
+                padding: EdgeInsets.only(right: 4.0),
                 child: _selectPopup(),
               ),
             ],
