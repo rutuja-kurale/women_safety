@@ -127,42 +127,84 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget mainUi(){
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: dashboardUi(),
-    );
+    return dashboardUi();
   }
 
   Widget dashboardUi(){
     return Column(
       children: <Widget>[
         SizedBox(height: 40.0,),
-        Text(
-          'Your Current Location:',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.w700,
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.50,
+          height: 80.0,
+          child: RaisedButton(
+            elevation: 18.0,
+            onPressed: (){
+              if(_num1.toString() == null || _num2.toString() == null || _num3.toString() == null){
+                Fluttertoast.showToast(
+                    msg: "Please add atleast 3 numbers",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    backgroundColor: Colors.blue,
+                    textColor: Colors.white,
+                    fontSize: 16.0
+                );
+              } else {
+                sendDirectSmsToAll();
+              }
+            },
+            color: Colors.red,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Help Me!!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21.0,
+                  ),
+                ),
+                SizedBox(width: 10.0,),
+                Icon(
+                  Icons.warning,
+                  color: Colors.white,
+                  size: 30.0,
+                ),
+              ],
+            ),
           ),
         ),
-        SizedBox(height: 15.0,),
-        Text(
-          'Latitude: $_lat',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16.0,
-          ),
+        SizedBox(height: 30.0,),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.70,
+          height: 80.0,
+          child: RaisedButton(
+            elevation: 18.0,
+            onPressed: (){
+
+            },
+            color: Colors.pink,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Call Helpline No',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21.0,
+                  ),
+                ),
+                SizedBox(width: 10.0,),
+                Icon(
+                  Icons.call,
+                  color: Colors.white,
+                  size: 30.0,
+                ),
+              ],
+            ),
+            ),
         ),
-        SizedBox(height: 15.0,),
-        Text(
-          'Longitude: $_lng',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16.0,
-          ),
-        ),
-        SizedBox(height: 50.0,),
+        SizedBox(height: 30.0,),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.50,
           height: 80.0,
@@ -184,50 +226,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               }
             },
-            color: Colors.red,
+            color: Colors.yellow,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
                   'Sound Alarm!',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 21.0,
                   ),
                 ),
                 SizedBox(width: 10.0,),
                 Icon(
                   Icons.notifications_active,
-                  color: Colors.white,
+                  color: Colors.black,
                   size: 30.0,
                 ),
               ],
             ),
-            ),
+          ),
         ),
-        SizedBox(height: 50.0,),
+        SizedBox(height: 80.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.50,
-          height: 80.0,
+          width: MediaQuery.of(context).size.width * 0.40,
+          height: 55.0,
           child: RaisedButton(
             elevation: 18.0,
             onPressed: (){
-              if(_num1.toString() == null || _num2.toString() == null || _num3.toString() == null){
-
-              } else {
-//                _sendSMS(
-//                  _message,
-//                  recipents
-//                );
-                sendDirectSmsToAll();
-              }
             },
             color: Colors.blue,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Send SMS',
+                  'Next',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 21.0,
@@ -235,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(width: 10.0,),
                 Icon(
-                  Icons.textsms,
+                  Icons.arrow_forward,
                   color: Colors.white,
                   size: 30.0,
                 ),
@@ -243,6 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
+        SizedBox(height: 50.0,),
       ],
     );
   }
@@ -267,201 +301,197 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget addNumbersUi() {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: Padding(
-        padding: const EdgeInsets.only(left:15.0, right: 15.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _numbersKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 30.0,),
-                Text(
-                  'Please Enter Atleast 3 Numbers',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20.0,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.only(left:15.0, right: 15.0),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _numbersKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 30.0,),
+              Text(
+                'Please Enter Atleast 3 Numbers',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20.0,
                 ),
-                SizedBox(height: 15.0,),
-                TextFormField(
-                  enableInteractiveSelection: true,
-                  enabled: true,
-                  validator: validateMobile,
-                  keyboardType: TextInputType.phone,
-                  onSaved: (val){
-                    setState(() {
-                      _num1 = val;
-                    });
+              ),
+              SizedBox(height: 15.0,),
+              TextFormField(
+                enableInteractiveSelection: true,
+                enabled: true,
+                validator: validateMobile,
+                keyboardType: TextInputType.phone,
+                onSaved: (val){
+                  setState(() {
+                    _num1 = val;
+                  });
+                },
+                style: new TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: new InputDecoration(
+                  labelText: 'First Number',
+                  labelStyle: TextStyle(
+                      color: Colors.black
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  fillColor: Colors.black,
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
+                ),
+              ),
+              SizedBox(height: 15.0,),
+              TextFormField(
+                enableInteractiveSelection: true,
+                enabled: true,
+                validator: validateMobile,
+                keyboardType: TextInputType.phone,
+                onSaved: (val){
+                  setState(() {
+                    _num2 = val;
+                  });
+                },
+                style: new TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: new InputDecoration(
+                  labelText: 'Second Number',
+                  labelStyle: TextStyle(
+                      color: Colors.black
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  fillColor: Colors.black,
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
+                ),
+              ),
+              SizedBox(height: 15.0,),
+              TextFormField(
+                enableInteractiveSelection: true,
+                enabled: true,
+                validator: validateMobile,
+                keyboardType: TextInputType.phone,
+                onSaved: (val){
+                  setState(() {
+                    _num3 = val;
+                  });
+                },
+                style: new TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: new InputDecoration(
+                  labelText: 'Third Number',
+                  labelStyle: TextStyle(
+                      color: Colors.black
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  fillColor: Colors.black,
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
+                ),
+              ),
+              SizedBox(height: 15.0,),
+              TextFormField(
+                enableInteractiveSelection: true,
+                enabled: true,
+                keyboardType: TextInputType.phone,
+                onSaved: (val){
+                  setState(() {
+                    _num4 = val;
+                  });
+                },
+                style: new TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: new InputDecoration(
+                  labelText: 'Fourth Number (Optional)',
+                  labelStyle: TextStyle(
+                      color: Colors.black
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  fillColor: Colors.black,
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
+                ),
+              ),
+              SizedBox(height: 15.0,),
+              TextFormField(
+                enableInteractiveSelection: true,
+                enabled: true,
+                keyboardType: TextInputType.phone,
+                onSaved: (val){
+                  setState(() {
+                    _num5 = val;
+                  });
+                },
+                style: new TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: new InputDecoration(
+                  labelText: 'Fifth Number (Optional)',
+                  labelStyle: TextStyle(
+                      color: Colors.black
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black,width: 2.0),
+                  ),
+                  fillColor: Colors.black,
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
+                ),
+              ),
+              SizedBox(height: 25.0,),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.70,
+                height: 48.0,
+                child: RaisedButton(
+                  elevation: 18.0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                  onPressed: (){
+                    _validateInputs();
                   },
-                  style: new TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: new InputDecoration(
-                    labelText: 'First Number',
-                    labelStyle: TextStyle(
-                        color: Colors.black
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                  ),
-                ),
-                SizedBox(height: 15.0,),
-                TextFormField(
-                  enableInteractiveSelection: true,
-                  enabled: true,
-                  validator: validateMobile,
-                  keyboardType: TextInputType.phone,
-                  onSaved: (val){
-                    setState(() {
-                      _num2 = val;
-                    });
-                  },
-                  style: new TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: new InputDecoration(
-                    labelText: 'Second Number',
-                    labelStyle: TextStyle(
-                        color: Colors.black
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                  ),
-                ),
-                SizedBox(height: 15.0,),
-                TextFormField(
-                  enableInteractiveSelection: true,
-                  enabled: true,
-                  validator: validateMobile,
-                  keyboardType: TextInputType.phone,
-                  onSaved: (val){
-                    setState(() {
-                      _num3 = val;
-                    });
-                  },
-                  style: new TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: new InputDecoration(
-                    labelText: 'Third Number',
-                    labelStyle: TextStyle(
-                        color: Colors.black
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                  ),
-                ),
-                SizedBox(height: 15.0,),
-                TextFormField(
-                  enableInteractiveSelection: true,
-                  enabled: true,
-                  keyboardType: TextInputType.phone,
-                  onSaved: (val){
-                    setState(() {
-                      _num4 = val;
-                    });
-                  },
-                  style: new TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: new InputDecoration(
-                    labelText: 'Fourth Number (Optional)',
-                    labelStyle: TextStyle(
-                        color: Colors.black
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                  ),
-                ),
-                SizedBox(height: 15.0,),
-                TextFormField(
-                  enableInteractiveSelection: true,
-                  enabled: true,
-                  keyboardType: TextInputType.phone,
-                  onSaved: (val){
-                    setState(() {
-                      _num5 = val;
-                    });
-                  },
-                  style: new TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: new InputDecoration(
-                    labelText: 'Fifth Number (Optional)',
-                    labelStyle: TextStyle(
-                        color: Colors.black
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black,width: 2.0),
-                    ),
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                  ),
-                ),
-                SizedBox(height: 25.0,),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.70,
-                  height: 48.0,
-                  child: RaisedButton(
-                    elevation: 18.0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                    onPressed: (){
-                      _validateInputs();
-                    },
-                    color: Colors.blue,
-                    child: Text(
-                      'Add Numbers',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19.0,
-                      ),
+                  color: Colors.blue,
+                  child: Text(
+                    'Add Numbers',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
                     ),
                   ),
                 ),
-                SizedBox(height: 80.0,),
-              ],
-            ),
+              ),
+              SizedBox(height: 250.0,),
+            ],
           ),
         ),
       ),
@@ -641,6 +671,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: WillPopScope(
         onWillPop: backButtonHandler,
         child: Scaffold(
+          resizeToAvoidBottomPadding: false,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(
@@ -668,7 +699,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ) : Container(),
             ],
           ),
-          body: numberFound == true ? mainUi() : addNumbersUi(),
+          body: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage("assets/images/back_safe.png"), fit: BoxFit.fill),
+              ),
+            child: numberFound == true ? mainUi() : addNumbersUi(),
+          ),
         ),
       ),
     );

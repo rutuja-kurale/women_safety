@@ -239,7 +239,7 @@ class _editContactsState extends State<editContacts> {
                   ),
                 ),
               ),
-              SizedBox(height: 80.0,),
+              SizedBox(height: 250.0,),
             ],
           ),
         ),
@@ -317,6 +317,7 @@ class _editContactsState extends State<editContacts> {
       child: WillPopScope(
         onWillPop: backButtonHandler,
         child: Scaffold(
+          resizeToAvoidBottomPadding: false,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(
@@ -332,6 +333,9 @@ class _editContactsState extends State<editContacts> {
           body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(image: AssetImage("assets/images/back_safe.png"), fit: BoxFit.cover),
+            ),
             child: checkingForNumbers == true ? loadingUI() : mainUI(),
           ),
         ),

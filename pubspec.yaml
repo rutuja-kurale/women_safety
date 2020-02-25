@@ -28,5 +28,6 @@ flutter:
 
   assets:
     - assets/audio/siren.mp3
-
+    - assets/images/back_safe.jpg
+    - assets/images/back_safe.png
 
