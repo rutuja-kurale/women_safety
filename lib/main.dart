@@ -12,6 +12,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intent/intent.dart' as android_intent;
 import 'package:intent/action.dart' as android_action;
+import 'package:women_safety_app/about_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => new MyHomePage(),
         '/edit': (BuildContext context) => new editContacts(),
+        '/about': (BuildContext context) => new About(),
       },
       home: MyHomePage(),
     );
@@ -684,7 +686,7 @@ class _MyHomePageState extends State<MyHomePage> {
     onSelected: (value) {
       switch (value) {
         case 1: {
-//          logoutHandler();
+          Navigator.of(context).pushNamed("/about");
         }
         break;
         case 2: {
