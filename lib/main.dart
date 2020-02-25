@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
-import 'package:location/location.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:women_safety_app/edit_contacts.dart';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter_sms/flutter_sms.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(MyApp());
 
@@ -51,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isPlaying = false;
   String _message;
   List<String> recipents = new List<String>();
+  static const platform = const MethodChannel('sendSms');
 
   requestPermissionsHandler() async {
     await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms]);
@@ -212,10 +215,11 @@ class _MyHomePageState extends State<MyHomePage> {
               if(_num1.toString() == null || _num2.toString() == null || _num3.toString() == null){
 
               } else {
-                _sendSMS(
-                  _message,
-                  recipents
-                );
+//                _sendSMS(
+//                  _message,
+//                  recipents
+//                );
+                sendDirectSmsToAll();
               }
             },
             color: Colors.blue,
@@ -553,6 +557,50 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() => _message = _result);
     } catch (error) {
       setState(() => _message = error.toString());
+    }
+  }
+
+  Future<Null> sendDirectSmsToAll()async {
+    print("Sending SMS");
+    try {
+      if(_num1.toString() != null){
+        final String result1 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num1,"msg":_message});
+        print(result1);
+      }
+      if(_num2.toString() != null){
+        final String result2 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num2,"msg":_message});
+        print(result2);
+      }
+      if(_num3.toString() != null){
+        final String result3 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num3,"msg":_message});
+        print(result3);
+      }
+      if(_num4.toString() != null){
+        final String result4 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num4,"msg":_message});
+        print(result4);
+      }
+      if(_num5.toString() != null){
+        final String result5 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num5,"msg":_message});
+        print(result5);
+      }
+      Fluttertoast.showToast(
+          msg: "SMS Sent with location",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    } on PlatformException catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(
+          msg: "Failed to send the SMS " + e.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
     }
   }
 
