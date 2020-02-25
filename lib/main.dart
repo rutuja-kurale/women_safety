@@ -9,8 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:women_safety_app/edit_contacts.dart';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:flutter_sms/flutter_sms.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intent/intent.dart' as android_intent;
+import 'package:intent/action.dart' as android_action;
 
 void main() => runApp(MyApp());
 
@@ -56,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static const platform = const MethodChannel('sendSms');
 
   requestPermissionsHandler() async {
-    await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms]);
+    await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms, PermissionGroup.phone]);
 //    await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
     initPlatformState();
 
@@ -151,6 +152,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               } else {
                 sendDirectSmsToAll();
+                android_intent.Intent()
+                  ..setAction(android_action.Action.ACTION_CALL)
+                  ..setData(Uri(scheme: "tel", path: "+91$_num1"))
+                  ..startActivity().catchError((e) => print(e));
               }
             },
             color: Colors.red,
@@ -181,7 +186,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: RaisedButton(
             elevation: 18.0,
             onPressed: (){
-
+              android_intent.Intent()
+                ..setAction(android_action.Action.ACTION_CALL)
+                ..setData(Uri(scheme: "tel", path: "103"))
+                ..startActivity().catchError((e) => print(e));
             },
             color: Colors.pink,
             child: Row(
@@ -253,8 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 55.0,
           child: RaisedButton(
             elevation: 18.0,
-            onPressed: (){
-            },
+            onPressed: (){},
             color: Colors.blue,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -577,16 +584,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _autoValidate = true;
         debugPrint(_autoValidate.toString());
       });
-    }
-  }
-
-  void _sendSMS(String message, List<String> recipents) async {
-    try {
-      String _result =
-      await sendSMS(message: message, recipients: recipents);
-      setState(() => _message = _result);
-    } catch (error) {
-      setState(() => _message = error.toString());
     }
   }
 
