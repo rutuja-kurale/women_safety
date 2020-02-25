@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 _currentLocation = result;
                 _lat = _currentLocation.latitude;
                 _lng = _currentLocation.longitude;
-                _message = "I need Urgent Help!! \n This is my location \n" + "http://maps.google.com/maps?q=$_lat,$_lng";
+                _message = "I need Urgent Help!! \n This is my location \n" + "http://maps.google.com/maps?q=$_lat,$_lng&z=17&hl=en";
               });
             }
           });
