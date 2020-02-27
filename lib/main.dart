@@ -13,6 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intent/intent.dart' as android_intent;
 import 'package:intent/action.dart' as android_action;
 import 'package:women_safety_app/about_page.dart';
+import 'package:women_safety_app/police_station_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => new MyHomePage(),
         '/edit': (BuildContext context) => new editContacts(),
         '/about': (BuildContext context) => new About(),
+        '/police': (BuildContext context) => new PoliceAddess(),
       },
       home: MyHomePage(),
     );
@@ -138,10 +140,13 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         SizedBox(height: 40.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.50,
+          width: MediaQuery.of(context).size.width * 0.70,
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(8.0),
+            ),
             onPressed: (){
               if(_num1.toString() == null || _num2.toString() == null || _num3.toString() == null){
                 Fluttertoast.showToast(
@@ -187,6 +192,9 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0),
+            ),
             onPressed: (){
               android_intent.Intent()
                 ..setAction(android_action.Action.ACTION_CALL)
@@ -216,10 +224,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         SizedBox(height: 30.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.50,
+          width: MediaQuery.of(context).size.width * 0.70,
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0),
+            ),
             onPressed: (){
               if(isPlaying == false) {
                 assetsAudioPlayer.open(
@@ -251,6 +262,39 @@ class _MyHomePageState extends State<MyHomePage> {
                 Icon(
                   Icons.notifications_active,
                   color: Colors.black,
+                  size: 30.0,
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 30.0,),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.70,
+          height: 80.0,
+          child: RaisedButton(
+            elevation: 18.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0),
+            ),
+            onPressed: (){
+              Navigator.of(context).pushNamed("/police");
+            },
+            color: Colors.blue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Police Station Near Me',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21.0,
+                  ),
+                ),
+                SizedBox(width: 10.0,),
+                Icon(
+                  Icons.security,
+                  color: Colors.white,
                   size: 30.0,
                 ),
               ],
