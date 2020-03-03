@@ -14,6 +14,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 public class MainActivity extends FlutterActivity {
 
   private static final String CHANNEL = "sendSms";
+  private static final String CHANNEL = "sendAudio";
 
   private MethodChannel.Result callResult;
 
@@ -27,6 +28,20 @@ public class MainActivity extends FlutterActivity {
                 if(call.method.equals("send")){
                   String num = call.argument("phone");
                   String msg = call.argument("msg");
+                  sendSMS(num,msg,result);
+                }else{
+                  result.notImplemented();
+                }
+              }
+            });
+
+    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL).setMethodCallHandler(
+            new MethodChannel.MethodCallHandler() {
+              @Override
+              public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+                if(call.method.equals("send")){
+                  String num = call.argument("phone");
+                  String msg = call.argument("uri");
                   sendSMS(num,msg,result);
                 }else{
                   result.notImplemented();
@@ -47,5 +62,15 @@ public class MainActivity extends FlutterActivity {
     }
   }
 
+
+  private void sendAudioSMS (String phoneNo, String fileName, MethodChannel.Result result) {
+    try {
+      SmsManager smsManager = SmsManager.getDefault();
+
+
+    } catch (Exception ex) {
+
+    }
+  }
 
 }

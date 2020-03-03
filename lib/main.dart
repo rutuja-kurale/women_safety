@@ -14,6 +14,10 @@ import 'package:intent/intent.dart' as android_intent;
 import 'package:intent/action.dart' as android_action;
 import 'package:women_safety_app/about_page.dart';
 import 'package:women_safety_app/police_station_page.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
+import 'package:intl/intl.dart' show DateFormat;
+
 
 void main() => runApp(MyApp());
 
@@ -56,15 +60,21 @@ class _MyHomePageState extends State<MyHomePage> {
   String error;
   final assetsAudioPlayer = AssetsAudioPlayer();
   bool isPlaying = false;
-  String _message;
+  String _message, _recordingFilePath;
   List<String> recipents = new List<String>();
   static const platform = const MethodChannel('sendSms');
+  static const platform1 = const MethodChannel('sendAudio');
+  FlutterSound flutterSound = new FlutterSound();
+  t_CODEC _codec = t_CODEC.CODEC_AAC;
+  bool _isRecording = false;
+  List <String> _path = [null, null, null, null, null, null, null];
+  StreamSubscription _recorderSubscription;
 
   requestPermissionsHandler() async {
-    await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms, PermissionGroup.phone]);
+    await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms,
+      PermissionGroup.phone, PermissionGroup.storage, PermissionGroup.microphone]);
 //    await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
     initPlatformState();
-
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -127,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    flutterSound.stopRecorder();
     _locationSubscription.cancel();
     super.dispose();
   }
@@ -679,6 +690,63 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
+  void startRecording() async {
+    try {
+
+      Directory tempDir = await getTemporaryDirectory();
+
+      String path = await flutterSound.startRecorder(
+        uri: '${tempDir.path}/sound.aac',
+        codec: _codec,
+      );
+      print('startRecorder: $path');
+
+      setState(() {
+        _recordingFilePath = path;
+      });
+      _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {
+        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
+            e.currentPosition.toInt(),
+            isUtc: true);
+        String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
+        print(txt);
+
+//        this.setState(() {
+//          this._recorderTxt = txt.substring(0, 8);
+//        });
+
+        this.setState(() {
+          this._isRecording = true;
+          this._path[_codec.index] = path;
+        });
+
+      });
+    } catch (err) {
+      print ('startRecorder error: $err');
+      this.setState(() {
+        this._isRecording = false;
+      });
+    }
+  }
+
+  void stopRecording() async {
+    try {
+      String result = await flutterSound.stopRecorder();
+      print ('stopRecorder: $result');
+      print(_recordingFilePath);
+
+      if ( _recorderSubscription != null ) {
+        _recorderSubscription.cancel ();
+        _recorderSubscription = null;
+      }
+    } catch (err) {
+      print ('stopRecorder error: $err');
+      this.setState(() {
+        this._isRecording = false;
+      });
+    }
+  }
+
   Widget _selectPopup() => PopupMenuButton<int>(
     itemBuilder: (context) => [
       PopupMenuItem(
@@ -756,7 +824,6 @@ class _MyHomePageState extends State<MyHomePage> {
       size: 30.0,),
     offset: Offset(0, 100),
   );
-
 
   @override
   Widget build(BuildContext context) {
