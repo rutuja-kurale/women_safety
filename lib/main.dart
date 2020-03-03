@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intent/extra.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
@@ -144,6 +145,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget mainUi(){
     return dashboardUi();
+  }
+
+  sendVoiceRecording() {
+    android_intent.Intent()
+      ..setAction(android_action.Action.ACTION_SEND)
+      ..putExtra(Extra.EXTRA_PACKAGE_NAME, "com.android.mms.ui.ComposeMessageActivity")
+      ..putExtra("address", "$_num1")
+      ..setData(Uri(scheme: 'content',
+          path:
+          '$_recordingFilePath'))
+      ..setType('audio/*')
+      ..startActivity().catchError((e) => print(e));
   }
 
   Widget dashboardUi(){
