@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List <String> _path = [null, null, null, null, null, null, null];
   StreamSubscription _recorderSubscription;
   static const timeout = const Duration(seconds: 10);
-  static const ms = const Duration(milliseconds: 1);
+  static const ms = const Duration(milliseconds: 1000);
 
   requestPermissionsHandler() async {
     await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms,
