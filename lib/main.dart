@@ -60,16 +60,18 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _permission = false;
   String error;
   final assetsAudioPlayer = AssetsAudioPlayer();
-  bool isPlaying = false;
+  bool isPlaying = false, isRecording = false;
   String _message, _recordingFilePath;
   List<String> recipents = new List<String>();
   static const platform = const MethodChannel('sendSms');
-  static const platform1 = const MethodChannel('sendAudio');
+//  static const platform1 = const MethodChannel('sendAudio');
   FlutterSound flutterSound = new FlutterSound();
   t_CODEC _codec = t_CODEC.CODEC_AAC;
   bool _isRecording = false;
   List <String> _path = [null, null, null, null, null, null, null];
   StreamSubscription _recorderSubscription;
+  static const timeout = const Duration(seconds: 10);
+  static const ms = const Duration(milliseconds: 1);
 
   requestPermissionsHandler() async {
     await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms,
@@ -145,18 +147,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget mainUi(){
     return dashboardUi();
-  }
-
-  sendVoiceRecording() {
-    android_intent.Intent()
-      ..setAction(android_action.Action.ACTION_SEND)
-      ..putExtra(Extra.EXTRA_PACKAGE_NAME, "com.android.mms.ui.ComposeMessageActivity")
-      ..putExtra("address", "$_num1")
-      ..setData(Uri(scheme: 'content',
-          path:
-          '$_recordingFilePath'))
-      ..setType('audio/*')
-      ..startActivity().catchError((e) => print(e));
   }
 
   Widget dashboardUi(){
@@ -270,6 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   isPlaying = false;
                 });
               }
+              startRecording();
             },
             color: Colors.yellow,
             child: Row(
@@ -302,6 +293,14 @@ class _MyHomePageState extends State<MyHomePage> {
               borderRadius: new BorderRadius.circular(8.0),
             ),
             onPressed: (){
+              Fluttertoast.showToast(
+                  msg: "Getting Nearby Police Station",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  backgroundColor: Colors.blue,
+                  textColor: Colors.white,
+                  fontSize: 16.0
+              );
               Navigator.of(context).pushNamed("/police");
             },
             color: Colors.blue,
@@ -716,13 +715,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
       setState(() {
         _recordingFilePath = path;
+        isRecording = true;
       });
+      startTimeout([int milliseconds]) {
+        var duration = milliseconds == null ? timeout : ms * milliseconds;
+        return new Timer(duration, stopRecording);
+      }
       _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {
         DateTime date = new DateTime.fromMillisecondsSinceEpoch(
             e.currentPosition.toInt(),
             isUtc: true);
-        String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-        print(txt);
+//        String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
+//        print(txt);
 
 //        this.setState(() {
 //          this._recorderTxt = txt.substring(0, 8);
@@ -752,12 +756,32 @@ class _MyHomePageState extends State<MyHomePage> {
         _recorderSubscription.cancel ();
         _recorderSubscription = null;
       }
+      this.setState(() {
+        isRecording = false;
+      });
+      sendVoiceRecording();
     } catch (err) {
       print ('stopRecorder error: $err');
       this.setState(() {
         this._isRecording = false;
       });
     }
+  }
+
+  sendVoiceRecording() async {
+    print('sending via sms nad file is:   $_recordingFilePath');
+    android_intent.Intent()
+      ..setAction(android_action.Action.ACTION_SEND)
+      ..putExtra(Extra.EXTRA_PACKAGE_NAME, "com.android.mms.ui.ComposeMessageActivity")
+      ..putExtra("address", "$_num1")
+      ..setData(Uri(scheme: 'content',
+          path:
+          _recordingFilePath))
+      ..setType('audio/aac')
+      ..startActivity().catchError((e) => print(e));
+
+//    final String result1 = await platform1.invokeMethod('sendAudio',
+//        <String,dynamic>{"uri":_recordingFilePath, "phone": "+91$_num1"});
   }
 
   Widget _selectPopup() => PopupMenuButton<int>(
