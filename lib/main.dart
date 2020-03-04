@@ -65,7 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Uri _recordingPath;
   List<String> recipents = new List<String>();
   static const platform = const MethodChannel('sendSms');
-  static const platform1 = const MethodChannel('sendAudio');
   FlutterSound flutterSound;
   t_CODEC _codec = t_CODEC.CODEC_AAC;
   bool _isRecording = false;
@@ -821,19 +820,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   sendVoiceRecording() async {
-//    android_intent.Intent()
-//      ..setAction(android_action.Action.ACTION_SENDTO)
-//      ..putExtra(Extra.EXTRA_STREAM, "com.android.mms")
-//      ..putExtra("address", "$_num1")
-//      ..setData(Uri(scheme: 'content',
-//          path:
-//          _recordingFilePath))
-//      ..setType('audio/aac')
-//      ..startActivity().catchError((e) => print(e));
-//    final String result1 = await platform1.invokeMethod('sendAudio',
-//        <String,dynamic>{"uri":_recordingFilePath, "phone": "+91$_num1",});
-//    print(result1.toString());
-
     ShareExtend.share(_recordingFilePath, "audio");
   }
 

@@ -6,28 +6,12 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.net.Uri;
-import android.content.pm.PackageManager;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Random;
 
 
 
@@ -54,21 +38,6 @@ public class MainActivity extends FlutterActivity {
                 }
               }
             });
-
-    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNELL).setMethodCallHandler(
-            new MethodChannel.MethodCallHandler() {
-              @Override
-              public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-                if(call.method.equals("sendAudio")){
-                  String uri = call.argument("uri");
-                  String num = call.argument("phone");
-                  sendMMS(num,uri,result);
-                }else{
-                  result.notImplemented();
-                }
-              }
-            });
-
   }
 
 
@@ -83,27 +52,5 @@ public class MainActivity extends FlutterActivity {
     }
   }
 
-
-  private void sendMMS(String phoneNo, String uri,MethodChannel.Result result) {
-    try {
-
-      Uri contentUri = (new Uri.Builder())
-              .authority("com.astutesoftsoln.women_safety_app.MmsFileProvider")
-              .path(uri)
-              .scheme(ContentResolver.SCHEME_CONTENT)
-              .build();
-      SmsManager smsManager = SmsManager.getDefault();
-      smsManager.sendMultimediaMessage(getApplicationContext(), contentUri, phoneNo, null, null);
-//      Intent sendIntent = new Intent(Intent.ACTION_SEND);
-//      sendIntent.setType("audio/aac");
-//      sendIntent.putExtra("address", phoneNo);
-//      sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
-//      startActivity(sendIntent);
-      result.success("MMS Sent");
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      result.error("Err","MMS Not Sent","");
-    }
-  }
 
 }
