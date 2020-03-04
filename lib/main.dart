@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intent/extra.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
@@ -728,17 +727,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void startRecorder() async{
     print("Start Recording");
     try {
-      // String path = await flutterSound.startRecorder
-      // (
-      //   paths[_codec.index],
-      //   codec: _codec,
-      //   sampleRate: 16000,
-      //   bitRate: 16000,
-      //   numChannels: 1,
-      //   androidAudioSource: AndroidAudioSource.MIC,
-      // );
       Directory tempDir = await getTemporaryDirectory();
-      File outputFile = await File ('${tempDir.path}/sound.aac');
+      File outputFile = File ('${tempDir.path}/sound.aac');
 
       String path = await flutterSound.startRecorder(
         uri: '${tempDir.path}/sound.aac',
@@ -747,22 +737,13 @@ class _MyHomePageState extends State<MyHomePage> {
       print('startRecorder: $path');
       startTimeout();
 
-      _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {
-//        print(e.currentPosition.toString());
-//        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-//            e.currentPosition.toInt(),
-//            isUtc: true);
-//        String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-//
-//        this.setState(() {
-//          this._recorderTxt = txt.substring(0, 8);
-//        });
-      });
+      _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {});
       _dbPeakSubscription =
           flutterSound.onRecorderDbPeakChanged.listen((value) {
             print("got update -> $value");
             setState(() {
               this._dbLevel = value;
+              print(_dbLevel.toString());
             });
           });
 
@@ -778,6 +759,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState (()
       {
         this._isRecording = false;
+        print(_isRecording.toString());
       });
     }
   }
