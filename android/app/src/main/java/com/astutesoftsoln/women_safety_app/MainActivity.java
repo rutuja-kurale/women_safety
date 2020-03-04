@@ -7,6 +7,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.content.Intent;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
@@ -14,7 +15,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 public class MainActivity extends FlutterActivity {
 
   private static final String CHANNEL = "sendSms";
-//  private static final String CHANNELL = "sendAudio";
+  private static final String CHANNELL = "sendAudio";
 
   private MethodChannel.Result callResult;
 
@@ -35,19 +36,19 @@ public class MainActivity extends FlutterActivity {
               }
             });
 
-//    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNELL).setMethodCallHandler(
-//            new MethodChannel.MethodCallHandler() {
-//              @Override
-//              public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-//                if(call.method.equals("sendAudio")){
-//                  String urri = call.argument("uri");
-//                  String numm = call.argument("phone");
-//                  sendMMS(urri,numm);
-//                }else{
-//                  result.notImplemented();
-//                }
-//              }
-//            });
+    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNELL).setMethodCallHandler(
+            new MethodChannel.MethodCallHandler() {
+              @Override
+              public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+                if(call.method.equals("sendAudio")){
+                  String uri = call.argument("uri");
+                  String num = call.argument("phone");
+                  sendMMS(uri,num,result);
+                }else{
+                  result.notImplemented();
+                }
+              }
+            });
 
   }
 
@@ -64,16 +65,22 @@ public class MainActivity extends FlutterActivity {
   }
 
 
-//  private void sendMMS(String phoneNo, String uri,MethodChannel.Result result) {
-//    try {
+  private void sendMMS(String phoneNo, String uri,MethodChannel.Result result) {
+    try {
 //      SmsManager smsManager = SmsManager.getDefault();
-//      smsManager.sendTextMessage(null,uri, phoneNo, null, null);
-//      result.success("MMS Sent");
-//    } catch (Exception ex) {
-//      ex.printStackTrace();
-//      result.error("Err","MMS Not Sent","");
-//    }
-//  }
+//      smsManager.sendTextMessage(phoneNo, null, msg, null, null);
+      Intent sendIntent = new Intent(Intent.ACTION_SEND);
+      sendIntent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
+      sendIntent.putExtra("address", phoneNo);
+      sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+      sendIntent.setType("audio/aac");
+      startActivity(sendIntent);
+      result.success("MMS Sent");
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      result.error("Err","MMS Not Sent","");
+    }
+  }
 
 
 }

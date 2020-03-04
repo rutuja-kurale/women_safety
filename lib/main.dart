@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intent/extra.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
@@ -17,7 +16,6 @@ import 'package:women_safety_app/about_page.dart';
 import 'package:women_safety_app/police_station_page.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
-import 'package:intl/intl.dart' show DateFormat;
 
 
 void main() => runApp(MyApp());
@@ -64,12 +62,14 @@ class _MyHomePageState extends State<MyHomePage> {
   String _message, _recordingFilePath;
   List<String> recipents = new List<String>();
   static const platform = const MethodChannel('sendSms');
-//  static const platform1 = const MethodChannel('sendAudio');
-  FlutterSound flutterSound = new FlutterSound();
+  static const platform1 = const MethodChannel('sendAudio');
+  FlutterSound flutterSound;
   t_CODEC _codec = t_CODEC.CODEC_AAC;
   bool _isRecording = false;
   List <String> _path = [null, null, null, null, null, null, null];
   StreamSubscription _recorderSubscription;
+  StreamSubscription _dbPeakSubscription;
+  double _dbLevel;
   static const timeout = const Duration(seconds: 10);
   static const ms = const Duration(milliseconds: 1000);
 
@@ -133,6 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    flutterSound = new FlutterSound();
+    flutterSound.setDbPeakLevelUpdate(0.8);
+    flutterSound.setDbLevelEnabled(true);
     requestPermissionsHandler();
     getNumbers();
     super.initState();
@@ -154,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         SizedBox(height: 40.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.70,
+          width: MediaQuery.of(context).size.width * 0.85,
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
@@ -202,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         SizedBox(height: 30.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.70,
+          width: MediaQuery.of(context).size.width * 0.85,
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
@@ -238,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         SizedBox(height: 30.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.70,
+          width: MediaQuery.of(context).size.width * 0.85,
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
@@ -260,7 +263,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   isPlaying = false;
                 });
               }
-              startRecording();
+              if (flutterSound.audioState == t_AUDIO_STATE.IS_RECORDING){
+                stopRecorder();
+              } else {
+                startRecorder();
+              }
             },
             color: Colors.yellow,
             child: Row(
@@ -285,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         SizedBox(height: 30.0,),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.70,
+          width: MediaQuery.of(context).size.width * 0.85,
           height: 80.0,
           child: RaisedButton(
             elevation: 18.0,
@@ -702,9 +709,31 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
-  void startRecording() async {
-    try {
+  startTimeout() {
+    var duration = Duration(seconds: 10);
+    return new Timer(duration, stopSoundAndService);
+  }
 
+  stopSoundAndService() {
+    onStartRecorderPressed();
+    assetsAudioPlayer.stop();
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  void startRecorder() async{
+    print("Start Recording");
+    try {
+      // String path = await flutterSound.startRecorder
+      // (
+      //   paths[_codec.index],
+      //   codec: _codec,
+      //   sampleRate: 16000,
+      //   bitRate: 16000,
+      //   numChannels: 1,
+      //   androidAudioSource: AndroidAudioSource.MIC,
+      // );
       Directory tempDir = await getTemporaryDirectory();
 
       String path = await flutterSound.startRecorder(
@@ -712,76 +741,97 @@ class _MyHomePageState extends State<MyHomePage> {
         codec: _codec,
       );
       print('startRecorder: $path');
+      startTimeout();
 
-      setState(() {
-        _recordingFilePath = path;
-        isRecording = true;
-      });
-      startTimeout([int milliseconds]) {
-        var duration = milliseconds == null ? timeout : ms * milliseconds;
-        return new Timer(duration, stopRecording);
-      }
       _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {
-        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-            e.currentPosition.toInt(),
-            isUtc: true);
+//        print(e.currentPosition.toString());
+//        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
+//            e.currentPosition.toInt(),
+//            isUtc: true);
 //        String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-//        print(txt);
-
+//
 //        this.setState(() {
 //          this._recorderTxt = txt.substring(0, 8);
 //        });
+      });
+      _dbPeakSubscription =
+          flutterSound.onRecorderDbPeakChanged.listen((value) {
+            print("got update -> $value");
+            setState(() {
+              this._dbLevel = value;
+            });
+          });
 
-        this.setState(() {
-          this._isRecording = true;
-          this._path[_codec.index] = path;
-        });
-
+      this.setState(() {
+        this._isRecording = true;
+        this._path[_codec.index] = path;
+        _recordingFilePath = path;
+        print(_recordingFilePath.toString());
       });
     } catch (err) {
       print ('startRecorder error: $err');
-      this.setState(() {
+      setState (()
+      {
         this._isRecording = false;
       });
     }
   }
 
-  void stopRecording() async {
+  void stopRecorder() async {
+    print("Stop Recording");
     try {
       String result = await flutterSound.stopRecorder();
       print ('stopRecorder: $result');
-      print(_recordingFilePath);
 
       if ( _recorderSubscription != null ) {
         _recorderSubscription.cancel ();
         _recorderSubscription = null;
       }
-      this.setState(() {
-        isRecording = false;
-      });
-      sendVoiceRecording();
-    } catch (err) {
+      if ( _dbPeakSubscription != null ) {
+        _dbPeakSubscription.cancel ();
+        _dbPeakSubscription = null;
+      }
+      print(_recordingFilePath.toString());
+    } catch ( err ) {
       print ('stopRecorder error: $err');
-      this.setState(() {
-        this._isRecording = false;
-      });
+    }
+    this.setState(() {
+      this._isRecording = false;
+      isRecording = false;
+    });
+
+  }
+
+  Future<bool> fileExists(String path) async {
+    return await File(path).exists();
+  }
+
+  onStartRecorderPressed() {
+//    if (flutterSound.audioState == t_AUDIO_STATE.IS_RECORDING)
+//      return stopRecorder;
+//
+//    return  flutterSound.audioState == t_AUDIO_STATE.IS_STOPPED ? startRecorder : null;
+    if (flutterSound.audioState == t_AUDIO_STATE.IS_RECORDING){
+      stopRecorder();
+    } else {
+      startRecorder();
     }
   }
 
   sendVoiceRecording() async {
-    print('sending via sms nad file is:   $_recordingFilePath');
-    android_intent.Intent()
-      ..setAction(android_action.Action.ACTION_SEND)
-      ..putExtra(Extra.EXTRA_PACKAGE_NAME, "com.android.mms.ui.ComposeMessageActivity")
-      ..putExtra("address", "$_num1")
-      ..setData(Uri(scheme: 'content',
-          path:
-          _recordingFilePath))
-      ..setType('audio/aac')
-      ..startActivity().catchError((e) => print(e));
+//    android_intent.Intent()
+//      ..setAction(android_action.Action.ACTION_SEND)
+//      ..putExtra(Extra.EXTRA_PACKAGE_NAME, "com.android.mms.ui.ComposeMessageActivity")
+//      ..putExtra("address", "$_num1")
+//      ..setData(Uri(scheme: 'content',
+//          path:
+//          _recordingFilePath))
+//      ..setType('audio/aac')
+//      ..startActivity().catchError((e) => print(e));
 
 //    final String result1 = await platform1.invokeMethod('sendAudio',
 //        <String,dynamic>{"uri":_recordingFilePath, "phone": "+91$_num1"});
+//    print(result1.toString());
   }
 
   Widget _selectPopup() => PopupMenuButton<int>(
