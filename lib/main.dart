@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intent/extra.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
@@ -16,6 +17,7 @@ import 'package:women_safety_app/about_page.dart';
 import 'package:women_safety_app/police_station_page.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
+import 'package:share_extend/share_extend.dart';
 
 
 void main() => runApp(MyApp());
@@ -60,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final assetsAudioPlayer = AssetsAudioPlayer();
   bool isPlaying = false, isRecording = false;
   String _message, _recordingFilePath;
+  Uri _recordingPath;
   List<String> recipents = new List<String>();
   static const platform = const MethodChannel('sendSms');
   static const platform1 = const MethodChannel('sendAudio');
@@ -720,6 +723,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       isPlaying = false;
     });
+    sendVoiceRecording();
   }
 
   void startRecorder() async{
@@ -735,6 +739,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //   androidAudioSource: AndroidAudioSource.MIC,
       // );
       Directory tempDir = await getTemporaryDirectory();
+      File outputFile = await File ('${tempDir.path}/sound.aac');
 
       String path = await flutterSound.startRecorder(
         uri: '${tempDir.path}/sound.aac',
@@ -766,7 +771,8 @@ class _MyHomePageState extends State<MyHomePage> {
         this._isRecording = true;
         this._path[_codec.index] = path;
         _recordingFilePath = path;
-        print(_recordingFilePath.toString());
+        _recordingPath = outputFile.uri;
+        print(_recordingPath.toString());
       });
     } catch (err) {
       print ('startRecorder error: $err');
@@ -802,10 +808,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  Future<bool> fileExists(String path) async {
-    return await File(path).exists();
-  }
-
   onStartRecorderPressed() {
 //    if (flutterSound.audioState == t_AUDIO_STATE.IS_RECORDING)
 //      return stopRecorder;
@@ -820,18 +822,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   sendVoiceRecording() async {
 //    android_intent.Intent()
-//      ..setAction(android_action.Action.ACTION_SEND)
-//      ..putExtra(Extra.EXTRA_PACKAGE_NAME, "com.android.mms.ui.ComposeMessageActivity")
+//      ..setAction(android_action.Action.ACTION_SENDTO)
+//      ..putExtra(Extra.EXTRA_STREAM, "com.android.mms")
 //      ..putExtra("address", "$_num1")
 //      ..setData(Uri(scheme: 'content',
 //          path:
 //          _recordingFilePath))
 //      ..setType('audio/aac')
 //      ..startActivity().catchError((e) => print(e));
-
 //    final String result1 = await platform1.invokeMethod('sendAudio',
-//        <String,dynamic>{"uri":_recordingFilePath, "phone": "+91$_num1"});
+//        <String,dynamic>{"uri":_recordingFilePath, "phone": "+91$_num1",});
 //    print(result1.toString());
+
+    ShareExtend.share(_recordingFilePath, "audio");
   }
 
   Widget _selectPopup() => PopupMenuButton<int>(
