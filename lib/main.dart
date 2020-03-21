@@ -17,7 +17,8 @@ import 'package:women_safety_app/police_station_page.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 import 'package:share_extend/share_extend.dart';
-import 'package:image_picker_saver/image_picker_saver.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_picker/image_picker.dart';
 
 
 void main() => runApp(MyApp());
@@ -45,9 +46,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-
-
+class _MyHomePageState extends State<MyHomePage> {
 
   Map<PermissionGroup, PermissionStatus> requestPermissions;
   PermissionStatus locationPermission;
@@ -76,7 +75,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   double _dbLevel;
   static const timeout = const Duration(seconds: 10);
   static const ms = const Duration(milliseconds: 1000);
-  Future<File> _imageFile;
 
 
   requestPermissionsHandler() async {
@@ -137,11 +135,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
-  void _onImageButtonPressed(ImageSource source) {
-    setState(() {
-      _imageFile = ImagePickerSaver.pickImage(source: source);
+  void _takePhoto() async {
+    ImagePicker.pickImage(source: ImageSource.camera)
+        .then((File recordedImage) {
+      if (recordedImage != null && recordedImage.path != null) {
+        GallerySaver.saveImage(recordedImage.path);
+      }
     });
   }
+
 
   @override
   void initState() {
@@ -913,9 +915,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             ),
             centerTitle: true,
             leading: IconButton(
-              icon: Icon(Icons.camera_enhance, color: Colors.white, size: 30.0,),
+              icon: Icon(Icons.camera_alt, color: Colors.white, size: 30.0,),
               onPressed: (){
-                _onImageButtonPressed(ImageSource.camera);
+                _takePhoto();
               },
             ),
             backgroundColor: Colors.pink,
