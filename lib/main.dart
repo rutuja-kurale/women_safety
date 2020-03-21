@@ -17,6 +17,7 @@ import 'package:women_safety_app/police_station_page.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 import 'package:share_extend/share_extend.dart';
+import 'package:image_picker_saver/image_picker_saver.dart';
 
 
 void main() => runApp(MyApp());
@@ -44,7 +45,9 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+
+
 
   Map<PermissionGroup, PermissionStatus> requestPermissions;
   PermissionStatus locationPermission;
@@ -56,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _num1, _num2, _num3, _num4, _num5;
   StreamSubscription<LocationData> _locationSubscription;
   Location _locationService  = new Location();
-  bool _permission = false;
+  bool _permission = false, isCapturing = false;
   String error;
   final assetsAudioPlayer = AssetsAudioPlayer();
   bool isPlaying = false, isRecording = false;
@@ -73,10 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
   double _dbLevel;
   static const timeout = const Duration(seconds: 10);
   static const ms = const Duration(milliseconds: 1000);
+  Future<File> _imageFile;
+
 
   requestPermissionsHandler() async {
     await PermissionHandler().requestPermissions([PermissionGroup.location, PermissionGroup.sms,
-      PermissionGroup.phone, PermissionGroup.storage, PermissionGroup.microphone]);
+      PermissionGroup.camera, PermissionGroup.phone, PermissionGroup.storage, PermissionGroup.microphone]);
 //    await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
     initPlatformState();
   }
@@ -132,6 +137,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _onImageButtonPressed(ImageSource source) {
+    setState(() {
+      _imageFile = ImagePickerSaver.pickImage(source: source);
+    });
+  }
+
   @override
   void initState() {
     flutterSound = new FlutterSound();
@@ -148,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _locationSubscription.cancel();
     super.dispose();
   }
+
 
   Widget mainUi(){
     return dashboardUi();
@@ -900,6 +912,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.camera_enhance, color: Colors.white, size: 30.0,),
+              onPressed: (){
+                _onImageButtonPressed(ImageSource.camera);
+              },
+            ),
             backgroundColor: Colors.pink,
             actions: <Widget>[
               Padding(
