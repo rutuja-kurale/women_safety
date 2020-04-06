@@ -584,11 +584,11 @@ class _MyHomePageState extends State<MyHomePage> {
     userDetails.setString("num4", _num4);
     userDetails.setString("num5", _num5);
     setState(() {
-      recipents.add(_num1);
-      recipents.add(_num2);
-      recipents.add(_num3);
-      recipents.add(_num4);
-      recipents.add(_num5);
+      _num1 != null ?? recipents.add(_num1);
+      _num2 != null ?? recipents.add(_num2);
+      _num3 != null ?? recipents.add(_num3);
+      _num4 != null ?? recipents.add(_num4);
+      _num5 != null ?? recipents.add(_num5);
     });
     numbersChecker();
     uiChanger();
@@ -653,23 +653,23 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Null> sendDirectSmsToAll()async {
     print("Sending SMS");
     try {
-      if(_num1.toString() != null){
+      if(_num1 != null){
         final String result1 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num1,"msg":_message});
         print(result1);
       }
-      if(_num2.toString() != null){
+      if(_num2 != null){
         final String result2 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num2,"msg":_message});
         print(result2);
       }
-      if(_num3.toString() != null){
+      if(_num3 != null){
         final String result3 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num3,"msg":_message});
         print(result3);
       }
-      if(_num4.toString() != null){
+      if(_num4 != null){
         final String result4 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num4,"msg":_message});
         print(result4);
       }
-      if(_num5.toString() != null){
+      if(_num5 != null){
         final String result5 = await platform.invokeMethod('send',<String,dynamic>{"phone":"+91"+ _num5,"msg":_message});
         print(result5);
       }
