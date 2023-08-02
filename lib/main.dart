@@ -903,7 +903,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: WillPopScope(
         onWillPop: backButtonHandler,
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(

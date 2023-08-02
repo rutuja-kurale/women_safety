@@ -317,7 +317,7 @@ class _editContactsState extends State<editContacts> {
       child: WillPopScope(
         onWillPop: backButtonHandler,
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(

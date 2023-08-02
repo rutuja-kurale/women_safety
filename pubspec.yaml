@@ -22,19 +22,16 @@ dependencies:
   intl: ^0.16.1
   gallery_saver: ^1.0.7
   image_picker: ^0.6.3+4
+  google_maps_flutter: ^2.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
 flutter:
-
   uses-material-design: true
-
 
   assets:
     - assets/audio/siren.mp3
     - assets/images/back_safe.jpg
     - assets/images/back_safe.png
-
